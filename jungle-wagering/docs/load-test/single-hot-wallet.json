@@ -1,0 +1,58 @@
+{
+  "environment": {
+    "note": "sandbox VM, PostgreSQL and the load generator share the same machine: indicative, NOT a capacity benchmark",
+    "cpus": 2,
+    "cpuModel": "Intel(R) Xeon(R) Processor",
+    "memoryMb": 8024,
+    "bun": "1.4.4",
+    "postgres": "16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)",
+    "path": "use case + repositories + PostgreSQL (no HTTP, no SQS network)"
+  },
+  "methodology": {
+    "durationS": 10,
+    "concurrency": 32,
+    "wallets": 200,
+    "hotRatio": 1,
+    "duplicateRatio": 0.1,
+    "mix": "~70% BET, ~10% LOSS, ~10% WIN (referenced), plus duplicate resends"
+  },
+  "results": {
+    "requests": 2898,
+    "throughputPerSecond": 286.3,
+    "latencyMs": {
+      "p50": 65.5,
+      "p95": 378.75,
+      "p99": 698.95,
+      "max": 1311.27
+    },
+    "statuses": {
+      "200": 2898
+    },
+    "errorRate": 0,
+    "duplicatesDetected": 329,
+    "concurrencyConflicts": {
+      "lockWaited": 1905,
+      "lockTimeouts": 0,
+      "deadlockRetries": 0,
+      "lockWaitMs": {
+        "p50": 75.34,
+        "p99": 712.89,
+        "max": 1303.8
+      }
+    },
+    "outbox": {
+      "eventsPublished": 5299,
+      "lagSecondsP95": 0.026,
+      "lagSecondsMax": 0.226,
+      "drainAfterLoadMs": 51
+    }
+  },
+  "invariants": {
+    "walletsDivergingFromLedger": 0,
+    "negativeBalances": 0,
+    "ledgerEntriesExpected": 2530,
+    "ledgerEntriesActual": 2530,
+    "ledgerMatchesProcessedTransactions": true,
+    "stuckPending": 0
+  }
+}
