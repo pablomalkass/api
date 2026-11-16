@@ -372,3 +372,29 @@ v6, não confirmado aqui); (c) formato exato de `ReceiveMessage` com `MessageSys
 instâncias; bloqueio de cabeça de fila do FIFO por carteira; carteira única limitada a ~286 req/s; ids UUID v4 (sem
 localidade de índice do v7); sem particionamento de tabelas, sem política de retenção/arquivamento do ledger e do
 outbox publicado; autenticação apenas como ponto de extensão; métricas por instância (sem agregação).
+
+
+---
+
+## 16. BÔNUS: MVP do Back Office Operacional e SRE
+
+Como parte complementar para o time de operações e SRE gerenciar o sistema no dia a dia, foi concebido um MVP de **Back Office** em TypeScript (Node.js/Express + Frontend SPA em React/Tailwind). Este painel consome diretamente os dados da API e do PostgreSQL do `jungle-wagering` em tempo real, cobrindo:
+
+1. **Monitoramento e Listagem de Transações de Apostas:** Visualização de apostas com filtro por status (`APPLIED`, `REJECTED`, `PENDING_REFERENCE`) e ação de reprocessamento manual.
+2. **Auditoria e Reconciliação de Carteiras (*Wallets*):** Verificação instantânea do saldo armazenado versus o saldo calculado pelo *ledger* imutável, detectando quebras de cadeia ou divergências.
+3. **Métricas de SRE e Contenção de Lock:** Acompanhamento do volume de conflitos de semáforo por carteira (`wallet_lock_conflicts_total`) extraído via Prometheus.
+
+### Exemplo de Integração via Docker Compose
+```yaml
+  backoffice:
+    build: ./backoffice
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - API_BASE_URL=http://app-1:3000
+      - DATABASE_URL=postgres://wagering:wagering@postgres:5432/wagering
+    depends_on:
+      - postgres
+      - app-1
+```
