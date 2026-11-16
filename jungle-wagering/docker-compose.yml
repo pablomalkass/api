@@ -8,7 +8,7 @@ name: wagering
 # SQS_ENDPOINT at it and create the same queues (infra/localstack/init-queues.sh is plain `aws sqs` calls).
 
 x-app-environment: &app-environment
-  DATABASE_URL: postgres://wagering_app:wagering_app@postgres:5432/wagering
+  DATABASE_URL: postgres://${POSTGRES_USER:-wagering_app}:${POSTGRES_PASSWORD:-wagering_app}@postgres:5432/${POSTGRES_DB:-wagering}
   AWS_REGION: us-east-1
   AWS_ACCESS_KEY_ID: test
   AWS_SECRET_ACCESS_KEY: test
@@ -40,7 +40,7 @@ services:
     image: postgres:16
     environment:
       POSTGRES_USER: wagering # schema owner: runs the migrations
-      POSTGRES_PASSWORD: wagering
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wagering}
       POSTGRES_DB: wagering
     ports:
       - "5432:5432"
@@ -76,7 +76,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      MIGRATION_DATABASE_URL: postgres://wagering:wagering@postgres:5432/wagering
+      MIGRATION_DATABASE_URL: postgres://${POSTGRES_USER:-wagering}:${POSTGRES_PASSWORD:-wagering}@postgres:5432/${POSTGRES_DB:-wagering}
     restart: "no"
 
   app-1:
